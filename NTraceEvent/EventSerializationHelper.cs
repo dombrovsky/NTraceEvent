@@ -3,11 +3,13 @@ namespace NTraceEvent
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.IO;
 
     internal static class EventSerializationHelper
     {
+        [SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code", Justification = "False positive")]
         public static EventSerializationScope Serialize<T>(StreamWriter streamWriter, in T traceEvent)
             where T : struct, ITraceEvent
         {
@@ -15,14 +17,8 @@ namespace NTraceEvent
 
             SerializeProperty(streamWriter, "ts", traceEvent.Timestamp, isFirst: true);
             SerializeProperty(streamWriter, "ph", traceEvent.Type.EventTypeKey);
-            SerializeProperty(streamWriter, "name", traceEvent.Name);
             SerializeProperty(streamWriter, "pid", traceEvent.ProcessId);
             SerializeProperty(streamWriter, "tid", traceEvent.ThreadId);
-
-            if (traceEvent.Categories.Count > 0)
-            {
-                SerializeProperty(streamWriter, "cat", string.Join(",", traceEvent.Categories));
-            }
 
             if (traceEvent.Color != default)
             {
@@ -32,6 +28,16 @@ namespace NTraceEvent
             if (traceEvent.ThreadTimestamp.HasValue)
             {
                 SerializeProperty(streamWriter, "tts", traceEvent.ThreadTimestamp.Value);
+            }
+
+            if (traceEvent is IHaveName hasName)
+            {
+                SerializeProperty(streamWriter, "name", hasName.Name);
+
+                if (hasName.Categories.Count > 0)
+                {
+                    SerializeProperty(streamWriter, "cat", string.Join(",", hasName.Categories));
+                }
             }
 
             if (traceEvent is IHaveArguments {Arguments: { }} hasArguments)

@@ -4,6 +4,10 @@ namespace NTraceEvent
     using System.IO;
     using System.Text;
 
+    /// <summary>
+    /// Writes trace events in JSON Array Format.
+    /// <see href="https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview#heading=h.f2f0yd51wi15"/>
+    /// </summary>
     public sealed class JsonArrayTraceEventWriter : ITraceEventWriter, IDisposable
     {
         private readonly StreamWriter _streamWriter;
@@ -30,6 +34,11 @@ namespace NTraceEvent
             }
         }
 
+        /// <summary>
+        /// Writes event to a stream.
+        /// </summary>
+        /// <typeparam name="T">The type of event.</typeparam>
+        /// <param name="traceEvent">The event.</param>
         public void Write<T>(T traceEvent)
             where T : ISerializableTraceEvent
         {

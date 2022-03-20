@@ -4,7 +4,11 @@ namespace NTraceEvent
     using System.Collections.Generic;
     using System.IO;
 
-    public readonly record struct CounterTraceEvent : ITraceEvent, ISerializableTraceEvent
+    /// <summary>
+    /// The counter events can track a value or multiple values as they change over time. Each counter can be provided with multiple series of data to display. When multiple series are provided they will be displayed as a stacked area chart in Trace Viewer.
+    /// <see href="https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview#heading=h.msg3086636uq"/>
+    /// </summary>
+    public readonly record struct CounterTraceEvent : ITraceEvent, IHaveName, ISerializableTraceEvent
     {
         private static readonly Dictionary<string, int> EmptyValues = new Dictionary<string, int>();
 

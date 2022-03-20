@@ -60,7 +60,6 @@ namespace NTraceEvent.Tests
             writer.Write(new DurationEndTraceEvent
             {
                 Timestamp = TimeSpan.FromMinutes(3),
-                Categories = new[] { "cat3" },
                 ProcessId = 1,
                 ThreadId = 3,
             });
