@@ -71,6 +71,14 @@ namespace NTraceEvent.Tests
                 ProcessId = 1,
                 Scope = InstantEventScope.Process,
             });
+
+            writer.Write(new MetadataTraceEvent
+            {
+                ProcessId = 1,
+                ThreadId = 3,
+                MetadataType = MetadataEventType.ProcessName,
+                Value = "notepad",
+            });
         }
     }
 }

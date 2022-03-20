@@ -11,5 +11,7 @@ namespace NTraceEvent
         public static readonly TraceEventType DurationEnd = new('E');
 
         public static readonly TraceEventType Counter = new('C');
+
+        public static readonly TraceEventType Metadata = new('M');
     }
 }

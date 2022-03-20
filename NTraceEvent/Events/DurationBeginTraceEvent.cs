@@ -11,7 +11,8 @@ namespace NTraceEvent
     /// The timestamps for the duration events must be in increasing order for a given thread. Timestamps in different threads do not have to be in increasing order, just the timestamps within a given thread.
     /// <see href="https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview#heading=h.nso4gcezn7n1"/>
     /// </summary>
-    public readonly record struct DurationBeginTraceEvent : ITraceEvent, IHaveName, IHaveArguments, IHaveStackFrames, ISerializableTraceEvent
+    public readonly record struct DurationBeginTraceEvent
+        : ITraceEvent, IHaveName, IHaveCategory, IHaveArguments, IHaveColor, IHaveTimestamp, IHaveStackFrames, ISerializableTraceEvent
     {
         public TraceEventType Type => TraceEventType.DurationBegin;
 
@@ -27,7 +28,7 @@ namespace NTraceEvent
 
         public int ProcessId { get; init; }
 
-        public string? Arguments { get; init; }
+        public IEnumerable<KeyValuePair<string, object>>? Arguments { get; init; }
 
         public ReservedColor Color { get; init; }
 

@@ -8,7 +8,8 @@ namespace NTraceEvent
     /// The instant events correspond to something that happens but has no duration associated with it. For example, vblank events are considered instant events.
     /// <see href="https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview#heading=h.lenwiilchoxp"/>
     /// </summary>
-    public readonly record struct InstantTraceEvent : ITraceEvent, IHaveArguments, IHaveName, IHaveStackFrames, ISerializableTraceEvent
+    public readonly record struct InstantTraceEvent
+        : ITraceEvent, IHaveArguments, IHaveName, IHaveCategory, IHaveTimestamp, IHaveColor, IHaveStackFrames, ISerializableTraceEvent
     {
         public TraceEventType Type => TraceEventType.Instant;
 
@@ -34,7 +35,7 @@ namespace NTraceEvent
 
         public int ProcessId { get; init; }
 
-        public string? Arguments { get; init; }
+        public IEnumerable<KeyValuePair<string, object>>? Arguments { get; init; }
 
         /// <remarks>
         /// Process-scoped and global-scoped events do not support stack traces at this time.

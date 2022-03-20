@@ -15,29 +15,32 @@ namespace NTraceEvent
         {
             streamWriter.Write("{ ");
 
-            SerializeProperty(streamWriter, "ts", traceEvent.Timestamp, isFirst: true);
-            SerializeProperty(streamWriter, "ph", traceEvent.Type.EventTypeKey);
+            SerializeProperty(streamWriter, "ph", traceEvent.Type.EventTypeKey, isFirst: true);
             SerializeProperty(streamWriter, "pid", traceEvent.ProcessId);
             SerializeProperty(streamWriter, "tid", traceEvent.ThreadId);
 
-            if (traceEvent.Color != default)
+            if (traceEvent is IHaveTimestamp hasTimestamp)
             {
-                SerializeProperty(streamWriter, "cname", traceEvent.Color.Key);
-            }
-
-            if (traceEvent.ThreadTimestamp.HasValue)
-            {
-                SerializeProperty(streamWriter, "tts", traceEvent.ThreadTimestamp.Value);
+                SerializeProperty(streamWriter, "ts", hasTimestamp.Timestamp);
+                if (hasTimestamp.ThreadTimestamp.HasValue)
+                {
+                    SerializeProperty(streamWriter, "tts", hasTimestamp.ThreadTimestamp.Value);
+                }
             }
 
             if (traceEvent is IHaveName hasName)
             {
                 SerializeProperty(streamWriter, "name", hasName.Name);
+            }
 
-                if (hasName.Categories.Count > 0)
-                {
-                    SerializeProperty(streamWriter, "cat", string.Join(",", hasName.Categories));
-                }
+            if (traceEvent is IHaveCategory hasCategory && hasCategory.Categories.Count > 0)
+            {
+                SerializeProperty(streamWriter, "cat", string.Join(",", hasCategory.Categories));
+            }
+
+            if (traceEvent is IHaveColor hasColor && hasColor.Color != default)
+            {
+                SerializeProperty(streamWriter, "cname", hasColor.Color.Key);
             }
 
             if (traceEvent is IHaveArguments {Arguments: { }} hasArguments)
@@ -54,11 +57,21 @@ namespace NTraceEvent
         }
 
         public static void SerializeProperty<T>(StreamWriter streamWriter, string key, T value, bool isFirst = false)
-            where T : IFormattable
         {
             using (WriteValue<T>(streamWriter, key, isFirst))
             {
-                streamWriter.Write(value.ToString(null, CultureInfo.InvariantCulture));
+                switch (value)
+                {
+                    case IFormattable formattable:
+                        streamWriter.Write(formattable.ToString(null, CultureInfo.InvariantCulture));
+                        break;
+                    case IEnumerable<string> stringCollection:
+                        SerializeProperty(streamWriter, key, stringCollection, isFirst);
+                        break;
+                    default:
+                        streamWriter.Write(value?.ToString());
+                        break;
+                }
             }
         }
 
@@ -94,9 +107,25 @@ namespace NTraceEvent
         }
 
         public static void SerializeProperty<T>(StreamWriter streamWriter, string key, IReadOnlyDictionary<string, T> value, bool isFirst = false)
-            where T : struct, IFormattable
+            where T : struct
         {
             using (WriteValue<IReadOnlyDictionary<string, T>>(streamWriter, key, isFirst))
+            {
+                streamWriter.Write('{');
+
+                var i = 0;
+                foreach (var item in value)
+                {
+                    SerializeProperty(streamWriter, item.Key, item.Value, i++ == 0);
+                }
+
+                streamWriter.Write('}');
+            }
+        }
+
+        public static void SerializeProperty(StreamWriter streamWriter, string key, IEnumerable<KeyValuePair<string, object>> value, bool isFirst = false)
+        {
+            using (WriteValue<IEnumerable<KeyValuePair<string, object>>>(streamWriter, key, isFirst))
             {
                 streamWriter.Write('{');
 

@@ -39,7 +39,7 @@ namespace NTraceEvent
         /// </summary>
         /// <typeparam name="T">The type of event.</typeparam>
         /// <param name="traceEvent">The event.</param>
-        public void Write<T>(T traceEvent)
+        public void Write<T>(in T traceEvent)
             where T : ISerializableTraceEvent
         {
             Argument.NotNull(traceEvent);
