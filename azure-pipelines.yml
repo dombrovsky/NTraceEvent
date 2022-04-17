@@ -1,0 +1,39 @@
+trigger: none
+pr: none
+
+pool:
+  vmImage: 'windows-2022'
+
+name: $(majorMinorVersion).$(semanticVersion)
+
+variables:
+  solution: 'NTraceEvent.sln'
+  buildConfiguration: 'Release'
+  majorMinorVersion: 1.0.0
+  # semanticVersion counter is automatically incremented by one in each execution of pipeline
+  # second parameter is seed value to reset to every time the referenced majorMinorVersion is changed
+  semanticVersion: $[counter(variables['majorMinorVersion'], 0)]
+
+steps:
+- task: NuGetToolInstaller@1
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet pack'
+  inputs:
+    command: 'pack'
+    configuration: '$(buildConfiguration)'
+    packagesToPack: '**/NTraceEvent*.csproj;!**/**.Tests.csproj'
+    includesymbols: true
+    versioningScheme: byBuildNumber
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish Artifacts'
+  inputs:
+    artifact: 'artifacts'
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+    publishLocation: 'pipeline'
