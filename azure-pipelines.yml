@@ -20,7 +20,6 @@ steps:
   inputs:
     command: 'restore'
     restoreSolution: '**/*.sln'
-    feedsToUse: 'select'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack'
@@ -30,6 +29,10 @@ steps:
     packagesToPack: '**/NTraceEvent*.csproj;!**/**.Tests.csproj'
     includesymbols: true
     versioningScheme: byBuildNumber
+
+- task: NuGetAuthenticate@0
+  inputs:
+    nuGetServiceConnections: 'nuget.org'
 
 - task: PublishPipelineArtifact@1
   displayName: 'Publish Artifacts'
