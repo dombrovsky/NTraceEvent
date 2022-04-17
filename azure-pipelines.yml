@@ -23,10 +23,11 @@ steps:
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack'
   inputs:
-    command: 'custom'
-    projects: '**/NTraceEvent.csproj'
-    custom: 'pack'
-    arguments: '--output $(Build.ArtifactStagingDirectory) --include-symbols /p:Configuration=$(buildConfiguration) /p:PackageVersion=$(majorMinorVersion).$(semanticVersion) --version-suffix $(suffixVersion) --verbosity Detailed'
+    command: 'pack'
+    configuration: '$(buildConfiguration)'
+    packagesToPack: '**/NTraceEvent.csproj;!**/**.Tests.csproj'
+    includesymbols: true
+    versioningScheme: byBuildNumber
 
 - task: NuGetAuthenticate@0
   inputs:
