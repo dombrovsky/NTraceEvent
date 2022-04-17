@@ -18,17 +18,15 @@ variables:
 steps:
 - task: NuGetToolInstaller@1
   inputs:
-    versionSpec: '5.x'
+    versionSpec: '5.8'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack'
   inputs:
-    command: 'pack'
-    configuration: '$(buildConfiguration)'
-    packagesToPack: '**/NTraceEvent*.csproj;!**/**.Tests.csproj'
-    includesymbols: true
-    versioningScheme: byBuildNumber
-    arguments: '--version-suffix "alpha"'
+    command: 'custom'
+    projects: '**/NTraceEvent*.csproj;!**/**.Tests.csproj'
+    custom: 'pack'
+    arguments: '--output $(Build.ArtifactStagingDirectory) --include-symbols /p:Configuration=$(buildConfiguration) /p:PackageVersion=$(majorMinorVersion).$(semanticVersion) --version-suffix $(suffixVersion) --verbosity Detailed'
 
 - task: NuGetAuthenticate@0
   inputs:
