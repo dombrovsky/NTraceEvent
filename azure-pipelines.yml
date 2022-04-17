@@ -24,7 +24,7 @@ steps:
   displayName: 'dotnet pack'
   inputs:
     command: 'custom'
-    projects: '**/NTraceEvent*.csproj;!**/**.Tests.csproj'
+    projects: '**/NTraceEvent.csproj'
     custom: 'pack'
     arguments: '--output $(Build.ArtifactStagingDirectory) --include-symbols /p:Configuration=$(buildConfiguration) /p:PackageVersion=$(majorMinorVersion).$(semanticVersion) --version-suffix $(suffixVersion) --verbosity Detailed'
 
