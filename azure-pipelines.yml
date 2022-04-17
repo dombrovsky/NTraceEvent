@@ -9,7 +9,7 @@ name: $(majorMinorVersion).$(semanticVersion)-$(suffixVersion)
 variables:
   solution: 'NTraceEvent.sln'
   buildConfiguration: 'Release'
-  majorMinorVersion: 1.0.0
+  majorMinorVersion: 0.1.0
   # semanticVersion counter is automatically incremented by one in each execution of pipeline
   # second parameter is seed value to reset to every time the referenced majorMinorVersion is changed
   semanticVersion: $[counter(variables['majorMinorVersion'], 0)]
@@ -17,6 +17,8 @@ variables:
 
 steps:
 - task: NuGetToolInstaller@1
+  inputs:
+    versionSpec: '5.x'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack'
@@ -25,7 +27,8 @@ steps:
     configuration: '$(buildConfiguration)'
     packagesToPack: '**/NTraceEvent*.csproj;!**/**.Tests.csproj'
     includesymbols: true
-    versioningScheme: byBuildNumber
+    versionEnvVar: '$(build.BuildNumber)'
+    versioningScheme: byEnvVar
 
 - task: NuGetAuthenticate@0
   inputs:
