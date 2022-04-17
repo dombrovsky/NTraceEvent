@@ -27,8 +27,8 @@ steps:
     configuration: '$(buildConfiguration)'
     packagesToPack: '**/NTraceEvent*.csproj;!**/**.Tests.csproj'
     includesymbols: true
-    versionEnvVar: '$(build.BuildNumber)'
-    versioningScheme: byEnvVar
+    versioningScheme: byBuildNumber
+    arguments: '--version-suffix "alpha"'
 
 - task: NuGetAuthenticate@0
   inputs:
