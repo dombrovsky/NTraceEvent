@@ -4,7 +4,7 @@ pr: none
 pool:
   vmImage: 'windows-2022'
 
-name: $(majorMinorVersion).$(semanticVersion)
+name: $(majorMinorVersion).$(semanticVersion)-$(suffixVersion)
 
 variables:
   solution: 'NTraceEvent.sln'
@@ -13,6 +13,7 @@ variables:
   # semanticVersion counter is automatically incremented by one in each execution of pipeline
   # second parameter is seed value to reset to every time the referenced majorMinorVersion is changed
   semanticVersion: $[counter(variables['majorMinorVersion'], 0)]
+  suffixVersion: 'alpha'
 
 steps:
 - task: NuGetToolInstaller@1
